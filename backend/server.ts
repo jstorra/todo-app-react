@@ -25,9 +25,14 @@ app.use(cors());
 app.post("/users", UserController.create);
 
 // GET
-app.get("/users", UserController.findAll);
-app.get("/users/id/:id", UserController.findById);
-app.get("/users/email/:email", UserController.findByEmail);
+app.get("/users", UserController.getAll);
+app.get("/users/:id", UserController.getById);
+
+// UPDATE
+app.put("/users/:id", UserController.update)
+
+// DELETE
+app.delete("/users/:id", UserController.delete)
 
 // MongoDB connection
 mongoose

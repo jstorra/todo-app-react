@@ -3,23 +3,18 @@ import UserRepository from "../repositories/user.repository";
 
 class UserService {
   // Find all users
-  async findAll(): Promise<IUser[]> {
-    return await UserRepository.findAll();
+  async getAll(): Promise<IUser[]> {
+    return await UserRepository.getAll();
   }
 
   // Find user by id
-  async findById(id: string): Promise<IUser | null> {
-    return await UserRepository.findById(id);
-  }
-
-  // Find user by email
-  async findByEmail(email: string): Promise<IUser | null> {
-    return await UserRepository.findByEmail(email);
+  async getById(id: string): Promise<IUser | null> {
+    return await UserRepository.getById(id);
   }
 
   // Create new user
   async create(userData: IUser): Promise<IUser> {
-    const user = await UserRepository.findByEmail(userData.email || "");
+    const user = await UserRepository.getByEmail(userData.email || "");
 
     if (user) {
       throw new Error("Email already exists");
@@ -29,11 +24,13 @@ class UserService {
   }
 
   // Update user
-
+  async update(id:string, userData: Partial<IUser>): Promise<IUser | null> {
+    return await UserRepository.update(id, userData);
+  }
 
   // Delete user
-  async delete(user: IUser): Promise<void> {
-    return await UserRepository.delete(user);
+  async delete(id: string): Promise<IUser | null> {
+    return await UserRepository.delete(id);
   }
 }
 

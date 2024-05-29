@@ -2,16 +2,17 @@ import User, { IUser } from "../models/user.model";
 
 class UserRepository {
   // Find all users
-  async findAll(): Promise<IUser[]> {
+  async getAll(): Promise<IUser[]> {
     return await User.find();
   }
 
   // Find user by id
-  async findById(id: string): Promise<IUser | null> {
+  async getById(id: string): Promise<IUser | null> {
     return await User.findById(id);
   }
+
   // Find user by email
-  async findByEmail(email: string): Promise<IUser | null> {
+  async getByEmail(email: string): Promise<IUser | null> {
     return await User.findOne({ email });
   }
 
@@ -21,11 +22,14 @@ class UserRepository {
   }
 
   // Update user
-
+  async update(id: string, userData: Partial<IUser>): Promise<IUser | null> {
+    // Establishing { new: true } means the response will have the new user data instead of the old
+    return await User.findByIdAndUpdate(id, userData, { new: true });
+  }
 
   // Delete user
-  async delete(user: IUser): Promise<void> {
-    return await user.deleteOne();
+  async delete(id: string): Promise<IUser | null> {
+    return await User.findByIdAndDelete(id);
   }
 }
 
