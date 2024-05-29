@@ -24,6 +24,11 @@ app.use(cors());
 // POST
 app.post("/users", UserController.create);
 
+// GET
+app.get("/users", UserController.findAll);
+app.get("/users/id/:id", UserController.findById);
+app.get("/users/email/:email", UserController.findByEmail);
+
 // MongoDB connection
 mongoose
   .connect(MONGOURL)

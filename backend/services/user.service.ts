@@ -1,27 +1,39 @@
-import User, { IUser } from "../models/user.model";
+import { IUser } from "../models/user.model";
 import UserRepository from "../repositories/user.repository";
 
 class UserService {
-  validateEmail(email: string): boolean {
-    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+  // Find all users
+  async findAll(): Promise<IUser[]> {
+    return await UserRepository.findAll();
   }
 
-  async create(userData: Partial<IUser>): Promise<IUser> {
-    try {
-      const email = userData.email || "";
-      if (!this.validateEmail(email)) {
-        throw new Error("Invalid email");
-      }
+  // Find user by id
+  async findById(id: string): Promise<IUser | null> {
+    return await UserRepository.findById(id);
+  }
 
-      const user = await UserRepository.findByEmail(email);
-      if (user) {
-        throw new Error("Email already exists");
-      }
+  // Find user by email
+  async findByEmail(email: string): Promise<IUser | null> {
+    return await UserRepository.findByEmail(email);
+  }
 
-      return await UserRepository.create(userData);
-    } catch (error: any) {
-      throw new Error("Error: " + (error as Error).message);
+  // Create new user
+  async create(userData: IUser): Promise<IUser> {
+    const user = await UserRepository.findByEmail(userData.email || "");
+
+    if (user) {
+      throw new Error("Email already exists");
     }
+
+    return await UserRepository.create(userData);
+  }
+
+  // Update user
+
+
+  // Delete user
+  async delete(user: IUser): Promise<void> {
+    return await UserRepository.delete(user);
   }
 }
 
