@@ -35,20 +35,10 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Middleware pre-saved to validate password hashed
-userSchema.pre<IUser>("save", async function (next) {
-  if (this.isModified("password") || this.isNew) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      this.password = await bcrypt.hash(this.password, salt);
-      next();
-    } catch (error: any) {
-      next(error);
-    }
-  } else {
-    next();
-  }
-});
+export async function encryptPassword(password: string): Promise<string> {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
+}
 
 // Function to compare hashed passwords
 userSchema.methods.comparePassword = async function (

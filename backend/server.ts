@@ -23,6 +23,7 @@ app.use(cors());
 
 // POST
 app.post("/users", UserController.create);
+app.post("/auth", UserController.authenticateUser)
 
 // GET
 app.get("/users", UserController.getAll);

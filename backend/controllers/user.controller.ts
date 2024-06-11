@@ -2,6 +2,23 @@ import { Request, Response } from "express";
 import UserService from "../services/user.service";
 
 class UserController {
+  // Login
+  async authenticateUser(req: Request, res: Response): Promise<void> {
+    try {
+      const auth = await UserService.authenticateUser(
+        req.body.email,
+        req.body.password
+      );
+
+      if (!auth) {
+        res.status(401).json({ message: "Wrong credentials" });
+        return;
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  }
+
   // Find all users
   async getAll(req: Request, res: Response): Promise<void> {
     try {
@@ -31,16 +48,19 @@ class UserController {
   // Create new user
   async create(req: Request, res: Response): Promise<void> {
     try {
-      const emailValidation =
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(req.body.email);
+      const validation = await UserService.emailValidation(req.body.email);
 
-      if (!emailValidation) {
+      if (!validation) {
         res.status(400).json({ message: "Error: Invalid email" });
         return;
       }
 
       const user = await UserService.create(req.body);
-      res.status(201).json(user);
+
+      res.status(201).json({
+        message: "Creation successful",
+        data: user,
+      });
     } catch (error: any) {
       res.status(500).json({ message: `Error: ${(error as Error).message}` });
     }
@@ -49,6 +69,15 @@ class UserController {
   // Update user
   async update(req: Request, res: Response): Promise<void> {
     try {
+      if (req.body.email) {
+        const validation = await UserService.emailValidation(req.body.email);
+
+        if (!validation) {
+          res.status(400).json({ message: "Error: Invalid email" });
+          return;
+        }
+      }
+
       const user = await UserService.update(req.params.id, req.body);
 
       if (!user) {
@@ -56,7 +85,10 @@ class UserController {
         return;
       }
 
-      res.status(200).json(user);
+      res.status(200).json({
+        message: "Update successful",
+        data: user,
+      });
     } catch (error: any) {
       res.status(500).json({ message: `Error: ${(error as Error).message}` });
     }
@@ -72,7 +104,7 @@ class UserController {
         return;
       }
 
-      res.status(200).json({ message: "User deleted" });
+      res.status(200).json({ message: "Deleted successful" });
     } catch (error: any) {
       res.status(500).json({ message: `Error: ${(error as Error).message}` });
     }
